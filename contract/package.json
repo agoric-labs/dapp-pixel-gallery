@@ -1,5 +1,5 @@
 {
-  "name": "@agoric/pixel-demo",
+  "name": "@agoric/dapp-pixel-gallery-contract",
   "version": "0.0.3",
   "description": "An example non-fungible token and app using ERTP",
   "main": "src/gallery.js",

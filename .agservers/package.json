@@ -1,5 +1,5 @@
 {
-  "name": "agoric-servers",
+  "name": "@agoric/dapp-pixel-gallery-servers",
   "version": "0.0.1",
   "description": "Agoric server instances for pixel-demo/",
   "private": true,
@@ -12,6 +12,6 @@
   "author": "Agoric",
   "license": "Apache-2.0",
   "dependencies": {
-    "@agoric/cosmic-swingset": "^0.12.0",
+    "@agoric/cosmic-swingset": "^0.12.0"
   }
 }
