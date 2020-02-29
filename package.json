@@ -1,12 +1,11 @@
 {
-  "name": "dapp",
+  "name": "@agoric/dapp-pixel-demo",
   "version": "independent",
   "private": true,
   "useWorkspaces": true,
   "workspaces": [
     "api",
     "contract",
-    "ui",
     ".agservers"
   ],
   "devDependencies": {
