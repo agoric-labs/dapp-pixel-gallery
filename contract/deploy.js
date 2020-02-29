@@ -3,19 +3,19 @@ import fs from 'fs';
 
 import harden from '@agoric/harden';
 
-const DAPP_NAME = "pixel-demo/";
+const DAPP_NAME = "pixel-demo";
 
 export default async function deployContract(homeP, { bundleSource, pathResolve },
-  CONTRACT_NAME = 'autoswap') {
+  CONTRACT_NAME = 'pixel-demo') {
 
-  // Create a source bundle for the "myFirstDapp" smart contract.
+  // Create a source bundle for the "pixel-demo" smart contract.
   const { source, moduleFormat } = await bundleSource(`./${CONTRACT_NAME}.js`);
 
   // =====================
   // === AWAITING TURN ===
   // =====================
 
-  const installationHandle = await homeP~.zoe~.install(source, moduleFormat);
+  const installationHandle = await homeP~.spawner~.install(source, moduleFormat);
 
   // =====================
   // === AWAITING TURN ===
