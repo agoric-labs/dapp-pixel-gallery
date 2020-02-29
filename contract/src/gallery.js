@@ -303,7 +303,7 @@ export function makeGallery(
     tapFaucet,
     getAssays,
     getCanvasSize() {
-      return canvasSize;
+      return [canvasSize, canvasSize];
     },
     pricePixelUnits, // transparent pricing for now
     sellToGallery,

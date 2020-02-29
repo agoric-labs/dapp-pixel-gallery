@@ -1,144 +1,68 @@
 // Agoric Dapp contract deployment script
 import fs from 'fs';
 
-import harden from '@agoric/harden';
-
-const DAPP_NAME = "pixel-demo";
+const DAPP_NAME = "pixel-gallery";
+const DEFAULT_CANVAS_SIZE = [10, 10];
 
 export default async function deployContract(homeP, { bundleSource, pathResolve },
-  CONTRACT_NAME = 'pixel-demo') {
+  CONTRACT_NAME = DAPP_NAME, initCanvasSize = DEFAULT_CANVAS_SIZE) {
 
   // Create a source bundle for the "pixel-demo" smart contract.
-  const { source, moduleFormat } = await bundleSource(`./${CONTRACT_NAME}.js`);
-
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
-
-  const installationHandle = await homeP~.spawner~.install(source, moduleFormat);
-
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
-  
-  // 1. Assays and payments
-  const purse0P = homeP~.wallet~.getPurse('moola');
-  const purse1P = homeP~.wallet~.getPurse('simolean');
-  const assay0P = purse0P~.getAssay();
-  const assay1P = purse1P~.getAssay();
-  const payment0P = purse0P~.withdraw(900);
-  const payment1P = purse1P~.withdraw(900);
+  const { source, moduleFormat } = await bundleSource(pathResolve(`./${CONTRACT_NAME}.js`), 'nestedEvaluate');
 
   const [
-    purse0,
-    purse1,
-    assay0,
-    assay1,
-    payment0,
-    payment1
+    installationHandle,
+    contractHost,
   ] = await Promise.all([
-    purse0P,
-    purse1P,
-    assay0P,
-    assay1P,
-    payment0P,
-    payment1P
+    await homeP~.zoe~.install(source, moduleFormat),
+    homeP~.contractHost,
   ]);
-
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
 
   // 2. Contract instance.
   const invite
-    = await homeP~.zoe~.makeInstance(installationHandle, { assays: [assay0, assay1] });
+    = await homeP~.zoe~.makeInstance(installationHandle, {
+      canvasSize: initCanvasSize,
+      contractHost,
+    });
   
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
-
-  // 3. Get the instanceHandle
+  // 3. Get the instanceHandle and admin seat
   
-  const {
-    extent: { instanceHandle },
-  } = await invite~.getBalance();
-
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
+  const [
+    {
+      extent: { instanceHandle },
+    },
+    adminSeat,
+  ] = await Promise.all([
+    invite~.getBalance(),
+    homeP~.zoe~.redeem(invite, [], []),
+  ]);
 
   // 4. Get the contract terms and assays
 
-  const { terms: { assays }} = await homeP~.zoe~.getInstance(instanceHandle);
+  const { terms: { pixelAssay, dustAssay, canvasSize }} = await homeP~.zoe~.getInstance(instanceHandle);
 
-
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
-
-  // 5. Offer rules
-  const [unit0, unit1, unit2] = await Promise.all([
-    assays~.[0]~.makeUnits(900),
-    assays~.[1]~.makeUnits(900),
-    assays~.[2]~.makeUnits(0),
-  ]);
-
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
-
-  const offerRules = harden({
-    payoutRules: [
-      {
-        kind: 'offerAtMost',
-        units: unit0,
-      },
-      {
-        kind: 'offerAtMost',
-        units: unit1,
-      },
-      {
-        kind: 'wantAtLeast',
-        units: unit2,
-      },
-    ],
-    exitRule: {
-      kind: 'onDemand',
-    },
-  });
-
-  // 6. Liquidities.
-
-  const payments = [payment0, payment1];
-
-  const { seat, payout } = await homeP~.zoe~.redeem(invite, offerRules, payments);
-
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
-
-  const [liquidityOk, contractId, instanceId] = await Promise.all([
-    seat~.addLiquidity(),
+  const [contractId, instanceId, pixelId, dustId, dustMint] = await Promise.all([
     homeP~.registrar~.register(DAPP_NAME, installationHandle),
     homeP~.registrar~.register(CONTRACT_NAME, instanceHandle),
+    homeP~.registrar~.register('pixel', pixelAssay),
+    homeP~.registrar~.register('dust', dustAssay),
+    adminSeat~.dustMint(),
   ]);
 
-  // =====================
-  // === AWAITING TURN ===
-  // =====================
-
-  console.log('- installation made', CONTRACT_NAME, '=>',  installationHandle);
+  console.log('- installation made', CONTRACT_NAME, '=>',  contractId);
   console.log('- instance made', CONTRACT_NAME, '=>', instanceId);
-  console.log(liquidityOk);
+  console.log('- instance pixel assay', pixelId),
+  console.log('- instance dust assay', dustId);
+  console.log('- admin dust mint', dustMint);
+  console.log('- canvas size', canvasSize);
 
-    // Save the instanceId somewhere where the UI can find it.
-  if (liquidityOk) {
-    const cjfile = pathResolve(`../ui/src/utils/contractID.js`);
-    console.log('writing', cjfile);
-    await fs.promises.writeFile(cjfile, `export default ${JSON.stringify(instanceId)};`);
-
-    // =====================
-    // === AWAITING TURN ===
-    // =====================
-  }
+  // Save the instanceId somewhere where the UI can find it.
+  const cjfile = pathResolve(`../ui/src/utils/contractID.js`);
+  console.log('writing', cjfile);
+  const ids = {
+    pixelId,
+    dustId,
+    instanceId,
+  };
+  await fs.promises.writeFile(cjfile, `export default ${JSON.stringify(ids)};`);
 }
