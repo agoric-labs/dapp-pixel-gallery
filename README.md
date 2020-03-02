@@ -1,3 +1,21 @@
+# NOT WORKING
+
+**This repository is in progress.  It doesn't yet work (at all).**
+
+**The rest of this README is the original one from the pixel demo.**
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
 # Pixel Demo
 
 This demo is roughly based on [Reddit's
