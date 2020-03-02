@@ -21,6 +21,7 @@ export default async function deployContract(homeP, { bundleSource, pathResolve 
   // 2. Contract instance.
   const invite
     = await homeP~.zoe~.makeInstance(installationHandle, {
+      assays: [],
       canvasSize: initCanvasSize,
       contractHost,
     });
@@ -39,7 +40,7 @@ export default async function deployContract(homeP, { bundleSource, pathResolve 
 
   // 4. Get the contract terms and assays
 
-  const { terms: { pixelAssay, dustAssay, canvasSize }} = await homeP~.zoe~.getInstance(instanceHandle);
+  const { terms: { assays: [pixelAssay, dustAssay], canvasSize }} = await homeP~.zoe~.getInstance(instanceHandle);
 
   const [contractId, instanceId, pixelId, dustId, dustMint] = await Promise.all([
     homeP~.registrar~.register(DAPP_NAME, installationHandle),

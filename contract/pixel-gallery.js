@@ -18,7 +18,10 @@ export const makeContract = harden((zoe, terms) => {
 
   const [canvasX, canvasY] = canvasSize;
   assert(canvasX === canvasY, details`Non-square canvas ${canvasX}x${canvasY} is unimplemented`);
+  const log = (...args) => console.log(...args);
   const { userFacet, adminFacet } = makeGallery(E, log, contractHost, updateState, canvasSize);
+
+  const { pixelAssay, dustAssay } = userFacet.getAssays();
 
   const makeAdminInvite = () => {
     const seat = harden({
@@ -37,7 +40,7 @@ export const makeContract = harden((zoe, terms) => {
       },
     },
     terms: {
-      ...terms,
+      assays: [pixelAssay, dustAssay],
       canvasSize: [canvasX, canvasY],
     },
   });

@@ -1,6 +1,6 @@
 import Nat from '@agoric/nat';
 import harden from '@agoric/harden';
-import { makeCollect } from '@agoric/spawner';
+import { makeCollect } from '@agoric/spawner/src/makeCollect';
 import { escrowExchangeSrcs } from '@agoric/spawner/src/escrow';
 import { assert, details } from '@agoric/assert';
 import { makeMint } from '@agoric/ertp';
