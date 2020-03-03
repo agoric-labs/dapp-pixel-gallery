@@ -7978,6 +7978,11 @@ react-stay-scrolled@^7.0.0:
   dependencies:
     tiny-invariant "^1.0.3"
 
+react-use-websocket@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/react-use-websocket/-/react-use-websocket-1.3.3.tgz#f680315e7df89e53e0c4ac6e34dcc1a6d4e0983b"
+  integrity sha512-UvMEbx95BrCY+FljGJo71IRstC/dXoC73U92OE2Vvn3kWw1Yt82d7NmuY4pFbnBjL4ZijwBHEnpe6dYZg9kXBQ==
+
 react@^16.8.6:
   version "16.13.0"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.0.tgz#d046eabcdf64e457bbeed1e792e235e1b9934cf7"
