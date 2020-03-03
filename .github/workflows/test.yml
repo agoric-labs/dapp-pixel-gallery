@@ -1,0 +1,51 @@
+name: Test all Packages
+
+# run CI on pushes to master, and on all PRs (even the ones that target other
+# branches)
+
+on:
+ push:
+   branches: [master]
+ pull_request:
+
+jobs:
+  test-contract:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: cache node modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    # 'yarn install' must be done at the top level, to build all the
+    # cross-package symlinks
+    - name: yarn install
+      run: yarn install
+    - name: yarn test
+      run: yarn test
+
+  test-ui:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+  
+    - name: cache node modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('ui/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    # 'yarn install' must be done in ui subdir.
+    - name: yarn install
+      run: yarn
+      working-directory: ./ui
+    - name: yarn test
+      run: yarn test --ci --watchAll=false
+      working-directory: ./ui
