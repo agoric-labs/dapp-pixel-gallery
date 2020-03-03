@@ -12,10 +12,10 @@ const RECONNECT_BACKOFF_SECONDS = 3;
 
 let maxHeight = 10;
 let maxWidth = 10;
-const galleryWidthVW = 95;
+const GALLERY_WIDTH_VW = 95;
 function pixelSize(scale) {
   // Scale based on viewport width.
-  return `${scale / maxWidth * galleryWidthVW}vw`;
+  return `${scale / maxWidth * GALLERY_WIDTH_VW}vw`;
 }
 
 const Pixel = React.memo(function Pixel({ color, generation }) {
@@ -86,8 +86,16 @@ function App({ wsURL }) {
   const [sendMessage, lastMessage, readyState] = useWebSocket(wsURL, options);
   useEffect(() => {
     if (readyState === ReadyState.OPEN) {
+      console.log('WebSocket connected!');
       const subscribe = {type: 'PIXEL_GALLERY_STREAM_CANVAS'};
       sendMessage(JSON.stringify(subscribe));
+      const obj = {state: JSON.stringify([
+        ['red', 'green', 'blue'],
+        ['blue', 'red', 'green'],
+        ['yellow', 'black'],
+        ['black', 'yellow', 'purple'],
+      ])};
+      setBoard(oldBoard => calculateBoard(JSON.parse(obj.state), oldBoard));
     }
   }, [readyState, sendMessage]);
 
@@ -107,8 +115,7 @@ function App({ wsURL }) {
   }, [lastMessage]);
 
   return (
-    <div>
-      <div>{readyState === ReadyState.OPEN ? 'Online' : 'Offline'}</div>
+    <div className="container" style={{background: readyState === ReadyState.OPEN ? 'black' : 'red'}}>
       <Gallery board={board} />
     </div>
   );
