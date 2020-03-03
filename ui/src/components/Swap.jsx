@@ -23,7 +23,8 @@ import {
   createOffer,
 } from '../store/actions';
 
-import { CONTRACT_ID } from '../utils/constants';
+import dappConstants from '../utils/constants';
+const { CONTRACT_ID } = dappConstants;
 
 const useStyles = makeStyles(theme => ({
   paper: {

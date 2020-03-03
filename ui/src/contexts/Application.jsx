@@ -15,7 +15,8 @@ import {
 } from '../store/actions';
 import { reducer, createDefaultState } from '../store/reducer';
 
-import { CONTRACT_ID } from '../utils/constants';
+import dappConstants from '../utils/constants';
+const { CONTRACT_ID } = dappConstants;
 
 export const ApplicationContext = createContext();
 

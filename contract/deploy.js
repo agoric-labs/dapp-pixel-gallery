@@ -58,12 +58,17 @@ export default async function deployContract(homeP, { bundleSource, pathResolve 
   console.log('- canvas size', canvasSize);
 
   // Save the instanceId somewhere where the UI can find it.
-  const cjfile = pathResolve(`../ui/src/utils/contractID.js`);
-  console.log('writing', cjfile);
-  const ids = {
-    pixelId,
-    dustId,
-    instanceId,
+  const envfile = pathResolve(`../ui/.env.local`);
+  console.log('writing', envfile);
+  const dappConstants = {
+    API_URL: "http://127.0.0.1:8000",
+    BRIDGE_URL: "http://127.0.0.1:8000",
+    PIXEL_ID: pixelId,
+    DUST_ID: dustId,
+    CONTRACT_ID: instanceId,
   };
-  await fs.promises.writeFile(cjfile, `export default ${JSON.stringify(ids)};`);
+  const envContents = `\
+REACT_APP_DAPP_CONSTANTS_JSON=${JSON.stringify(JSON.stringify(dappConstants))}
+`;
+  await fs.promises.writeFile(envFile, envContents);
 }

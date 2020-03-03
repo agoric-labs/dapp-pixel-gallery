@@ -21,6 +21,10 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Agoric SwingSet Solo REPL Demo</title>
+    <script>
+      // Allow the server to override the constants.
+      window.DAPP_CONSTANTS = __DAPP_CONSTANTS__;
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
