@@ -56,9 +56,22 @@ function useWhyDidYouUpdate(name, props) {
 /* global fetch */
 const RECONNECT_BACKOFF_SECONDS = 3;
 
+let maxHeight = 10;
+let maxWidth = 10;
+function pixelSize(scale) {
+  // Scale based on viewport width.
+  return `${scale / maxWidth * 100}vw`;
+}
+
 async function call(req) {
   // console.log(req);
-  return {state: "[[]]"}; // TODO
+  // TODO
+  return {state: JSON.stringify([
+    ['red', 'green', 'blue'],
+    ['blue', 'red', 'green'],
+    ['yellow', 'black'],
+    ['black', 'yellow'],
+  ])}; // TODO
   const res = await fetch('/vat', {
     method: 'POST',
     body: JSON.stringify(req),
@@ -76,8 +89,8 @@ const Pixel = React.memo(function Pixel({ color, generation }) {
   // useWhyDidYouUpdate('Pixel', { color, generation });
   return (
     <div
-      className={`updated${generation % 2}`}
-      style={{ backgroundColor: color }}
+      className={`pixel updated${generation % 2}`}
+      style={{ backgroundColor: color, height: pixelSize(1), width: pixelSize(1) }}
     />
   );
 });
@@ -85,10 +98,11 @@ const Pixel = React.memo(function Pixel({ color, generation }) {
 function Gallery({ board }) {
   let pxs = [];
   // We need to render increasing x followed by increasing y.
-  const maxHeight = board.reduce((prior, column) => Math.max(prior, column.length), 0);
+  maxHeight = board.reduce((prior, column) => Math.max(prior, column.length), 0);
+  maxWidth = board.length;
   for (let y = 0; y < maxHeight; y += 1) {
     for (let x = 0; x < board.length; x += 1) {
-      const [color, generation] = board[x][y];
+      const [color, generation] = y < board[x].length ? board[x][y] : [];
       pxs.push(<Pixel
         key={`${x},${y}`}
         color={color}
@@ -96,8 +110,12 @@ function Gallery({ board }) {
       />);
     }
   }
+  const style = {
+    height: pixelSize(maxHeight),
+    width: pixelSize(maxWidth),
+  };
   return (
-    <div id="galleryBoard" className="gallery">{pxs}</div>
+    <div id="galleryBoard" className="gallery" style={style}>{pxs}</div>
   );
 }
 
@@ -151,21 +169,7 @@ function App({ wsURL }) {
 
     const obj = JSON.parse(lastMessage);
 
-    // we receive commands to update result boxes
-    if (obj.type === 'updateHistory') {
-      // these args come from calls to vat-http.js updateHistorySlot()
-      setHistory(history => {
-        const newEntry = {
-          number: obj.histnum,
-          command: obj.command,
-          result: obj.display,
-        };
-        const i = history.findIndex(({ number }) => number === newEntry.number);
-        return i < 0
-          ? [...history, newEntry]
-          : [...history.slice(0, i), newEntry, ...history.slice(i + 1)];
-      });
-    } else if (obj.type === 'updateCanvas') {
+    if (obj.type === 'updateCanvas') {
       // console.log(obj);
       setBoard(oldBoard => calculateBoard(JSON.parse(obj.state), oldBoard));
     } else {

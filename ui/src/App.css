@@ -5,41 +5,19 @@
 
 h1 {
   text-align: center;
-  margin-top: 40px;
 }
 
 .container {
-  display: grid;
-  grid-template-columns: 506px auto;
-  grid-template-rows: 506px;
-  grid-column-gap: 40px;
-  padding: 40px;
-  box-sizing: border-box;
-}
-
-.left {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.right {
-  grid-column: 2;
-  grid-row: 1;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  grid-row-gap: 8px;
 }
 
 .gallery {
-  grid-row: 2;
-  border: 3px solid black;
   background: repeating-linear-gradient(-45deg, grey, grey 5px, white 5px, white 10px);
-  height: 500px;
-  width: 500px;
+  height: 100vw;
+  width: 100vw;
   line-height: 0;
 }
 
-.gallery > div {
+.gallery > .pixel {
   height: 50px;
   width: 50px;
   display: inline-block;
